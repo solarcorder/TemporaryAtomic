@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Habits</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F4F0E8;
+      --surface: #FDFAF5;
+      --border: #DDD8CC;
+      --text: #1C1B18;
+      --muted: #8A8478;
+      --accent: #1D3557;
+      --done: #2D6A4F;
+      --done-bg: #D8F3DC;
+      --partial: #A0522D;
+      --partial-bg: #FDEBD0;
+      --skip: #9B2226;
+      --skip-bg: #FFDAD6;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 18px 28px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      flex: 1;
+    }
+
+    /* ── Layout ── */
+    .layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 230px;
+      min-width: 230px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-top {
+      padding: 20px 16px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-top .label {
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .btn-add-habit {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 11px;
+      font-size: 0.72rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+    }
+
+    .habit-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 8px 16px;
+    }
+
+    .habit-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 10px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 0.83rem;
+      color: var(--text);
+      transition: background 0.12s;
+      user-select: none;
+    }
+
+    .habit-item:hover { background: #EDEBE4; }
+
+    .habit-item.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .h-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .habit-item.active .h-dot { background: rgba(255,255,255,0.6); }
+
+    /* ── Main ── */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 36px;
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 10px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .empty-state h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 400;
+      font-style: italic;
+    }
+
+    .empty-state p { font-size: 0.83rem; }
+
+    /* ── Detail ── */
+    .detail { max-width: 620px; }
+
+    .detail-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 3px;
+    }
+
+    .habit-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.9rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+
+    .btn-del {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-family: 'DM Sans', sans-serif;
+      padding: 4px 9px;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: all 0.12s;
+    }
+
+    .btn-del:hover { color: var(--skip); border-color: var(--skip); }
+
+    .pts-legend {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 26px;
+      font-size: 0.73rem;
+      color: var(--muted);
+    }
+
+    .pts-legend span { display: flex; align-items: center; gap: 4px; }
+
+    .pill {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.68rem;
+    }
+
+    .pill.done { background: var(--done-bg); color: var(--done); }
+    .pill.partial { background: var(--partial-bg); color: var(--partial); }
+    .pill.skip { background: var(--skip-bg); color: var(--skip); }
+
+    /* ── Section label ── */
+    .sec-label {
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    /* ── Log row ── */
+    .log-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 26px;
+      flex-wrap: wrap;
+    }
+
+    input[type="date"] {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      padding: 7px 11px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      outline: none;
+    }
+
+    input[type="date"]:focus { border-color: var(--accent); }
+
+    .log-btn {
+      padding: 7px 16px;
+      border-radius: 8px;
+      border: 1.5px solid;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      cursor: pointer;
+      background: transparent;
+      transition: all 0.13s;
+    }
+
+    .log-btn.done   { border-color: var(--done);    color: var(--done);    }
+    .log-btn.done:hover   { background: var(--done);    color: #fff; }
+    .log-btn.partial { border-color: var(--partial); color: var(--partial); }
+    .log-btn.partial:hover { background: var(--partial); color: #fff; }
+    .log-btn.skip   { border-color: var(--skip);    color: var(--skip);    }
+    .log-btn.skip:hover   { background: var(--skip);    color: #fff; }
+
+    /* ── Stats grid ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 15px 18px;
+    }
+
+    .stat-lbl {
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    .stat-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.75rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .stat-val.pos { color: var(--done); }
+    .stat-val.neg { color: var(--skip); }
+
+    /* ── Chart ── */
+    .chart-tabs {
+      display: flex;
+      gap: 2px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 14px;
+    }
+
+    .tab-btn {
+      padding: 6px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.12s;
+    }
+
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .chart-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 18px 18px 12px;
+      height: 220px;
+    }
+
+    /* ── Recent log ── */
+    .recent-log { margin-top: 26px; }
+
+    .log-entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8rem;
+    }
+
+    .log-entry:last-child { border-bottom: none; }
+    .log-date { color: var(--muted); font-size: 0.75rem; }
+
+    .log-score {
+      font-weight: 600;
+      font-size: 0.82rem;
+    }
+
+    .log-score.pos { color: var(--done); }
+    .log-score.neg { color: var(--skip); }
+
+    /* ── Modal ── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(28,27,24,0.45);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s;
+    }
+
+    .overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 30px;
+      width: 370px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.14);
+      transform: translateY(10px);
+      transition: transform 0.2s;
+    }
+
+    .overlay.open .modal { transform: translateY(0); }
+
+    .modal h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      margin-bottom: 22px;
+    }
+
+    .form-group { margin-bottom: 15px; }
+
+    .form-label {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 9px 13px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.14s;
+    }
+
+    .form-input:focus { border-color: var(--accent); }
+
+    .pts-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    .pts-inputs .form-group { margin-bottom: 0; }
+
+    .done-lbl { color: var(--done) !important; }
+    .partial-lbl { color: var(--partial) !important; }
+    .skip-lbl { color: var(--skip) !important; }
+
+    .modal-footer {
+      display: flex;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .btn-primary {
+      flex: 1;
+      padding: 10px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-cancel {
+      padding: 10px 16px;
+      background: none;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.83rem;
+      cursor: pointer;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      background: var(--accent);
+      color: #fff;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      z-index: 200;
+      transform: translateY(50px);
+      opacity: 0;
+      transition: all 0.22s;
+      pointer-events: none;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Habits</h1>
+</header>
+
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <span class="label">My Habits</span>
+      <button class="btn-add-habit" onclick="openModal()">+ Add</button>
+    </div>
+    <div class="habit-list" id="habitList"></div>
+  </aside>
+
+  <!-- Main panel -->
+  <main class="main" id="main">
+    <div class="empty-state">
+      <h2>No habit selected</h2>
+      <p>Add a habit or pick one from the list.</p>
+    </div>
+  </main>
+
+</div>
+
+<!-- Add Habit Modal -->
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="modal">
+    <h2>New Habit</h2>
+
+    <div class="form-group">
+      <label class="form-label">Name</label>
+      <input type="text" class="form-input" id="mName" placeholder="e.g. Exercise 30 min" autocomplete="off">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Points per outcome</label>
+      <div class="pts-inputs">
+        <div class="form-group">
+          <label class="form-label done-lbl">Done</label>
+          <input type="number" class="form-input" id="mDone" value="10">
+        </div>
+        <div class="form-group">
+          <label class="form-label partial-lbl">Partial</label>
+          <input type="number" class="form-input" id="mPartial" value="4">
+        </div>
+        <div class="form-group">
+          <label class="form-label skip-lbl">Skip</label>
+          <input type="number" class="form-input" id="mSkip" value="-5">
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="addHabit()">Add Habit</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ──────────────────────────────────────────
+let habits = JSON.parse(localStorage.getItem('h_habits') || '[]');
+let logs   = JSON.parse(localStorage.getItem('h_logs')   || '[]');
+let activeId = null;
+let activeView = 'week';
+let activeChart = null;
+
+function persist() {
+  localStorage.setItem('h_habits', JSON.stringify(habits));
+  localStorage.setItem('h_logs',   JSON.stringify(logs));
+}
+
+// ── Toast ──────────────────────────────────────────
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ── Sidebar ────────────────────────────────────────
+function renderList() {
+  document.getElementById('habitList').innerHTML = habits.length
+    ? habits.map(h => `
+        <div class="habit-item ${h.id === activeId ? 'active' : ''}" onclick="select('${h.id}')">
+          <div class="h-dot"></div>
+          ${esc(h.name)}
+        </div>
+      `).join('')
+    : `<div style="padding:12px 10px; font-size:0.78rem; color:var(--muted)">No habits yet.</div>`;
+}
+
+// ── Select habit ───────────────────────────────────
+function select(id) {
+  activeId = id;
+  activeView = 'week';
+  renderList();
+  renderDetail();
+}
+
+// ── Compute stats ──────────────────────────────────
+function stats(habitId) {
+  const ls = logs.filter(l => l.habitId === habitId).sort((a,b) => a.date > b.date ? 1 : -1);
+  const total = ls.reduce((s, l) => s + l.score, 0);
+
+  // Streak = consecutive days with a log (any type) ending today or yesterday
+  let streak = 0;
+  const today = todayStr();
+  for (let i = 0; i < 365; i++) {
+    const d = offsetDate(-i);
+    const found = ls.find(l => l.date === d);
+    if (found) { streak++; }
+    else if (i === 0) { /* today not logged yet — ok */ }
+    else break;
+  }
+
+  return { total, streak, count: ls.length, logs: ls };
+}
+
+// ── Chart data ─────────────────────────────────────
+function chartData(habitId, view) {
+  const days = view === 'week' ? 7 : view === 'month' ? 30 : 180;
+  const step = view === 'week' ? 1 : view === 'month' ? 3 : 10;
+
+  const logMap = {};
+  logs.filter(l => l.habitId === habitId).forEach(l => { logMap[l.date] = (logMap[l.date] || 0) + l.score; });
+
+  const start = offsetDate(-(days - 1));
+
+  // Base score before window
+  let running = 0;
+  Object.keys(logMap).filter(d => d < start).forEach(d => { running += logMap[d]; });
+
+  const allDates = [], allScores = [];
+  for (let i = 0; i < days; i++) {
+    const d = offsetDate(-(days - 1 - i));
+    if (logMap[d] !== undefined) running += logMap[d];
+    allDates.push(d);
+    allScores.push(running);
+  }
+
+  // Sample for readability
+  const labels = [], data = [];
+  allDates.forEach((d, i) => {
+    if (i % step === 0 || i === allDates.length - 1) {
+      const dt = new Date(d + 'T12:00:00');
+      labels.push(view === 'week'
+        ? dt.toLocaleDateString('en', { weekday: 'short' })
+        : dt.toLocaleDateString('en', { month: 'short', day: 'numeric' }));
+      data.push(allScores[i]);
+    }
+  });
+
+  return { labels, data };
+}
+
+// ── Render detail ──────────────────────────────────
+function renderDetail() {
+  const habit = habits.find(h => h.id === activeId);
+  if (!habit) return;
+
+  const st = stats(habit.id);
+  const recent = [...st.logs].reverse().slice(0, 8);
+
+  document.getElementById('main').innerHTML = `
+    <div class="detail">
+
+      <div class="detail-header">
+        <div class="habit-title">${esc(habit.name)}</div>
+        <button class="btn-del" onclick="delHabit('${habit.id}')">Delete</button>
+      </div>
+
+      <div class="pts-legend">
+        <span><span class="pill done">+${habit.done}</span> done</span>
+        <span><span class="pill partial">+${habit.partial}</span> partial</span>
+        <span><span class="pill skip">${habit.skip}</span> skip</span>
+      </div>
+
+      <div class="sec-label">Log</div>
+      <div class="log-row">
+        <input type="date" id="logDate" value="${todayStr()}" max="${todayStr()}">
+        <button class="log-btn done"    onclick="log('done')">Done</button>
+        <button class="log-btn partial" onclick="log('partial')">Partial</button>
+        <button class="log-btn skip"    onclick="log('skip')">Skip</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-lbl">Total Points</div>
+          <div class="stat-val ${st.total >= 0 ? 'pos' : 'neg'}">${st.total > 0 ? '+' : ''}${st.total}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">Streak</div>
+          <div class="stat-val">${st.streak}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">Entries</div>
+          <div class="stat-val">${st.count}</div>
+        </div>
+      </div>
+
+      <div class="chart-tabs">
+        <button class="tab-btn ${activeView==='week'    ? 'active':''}" onclick="switchView('week')">Week</button>
+        <button class="tab-btn ${activeView==='month'   ? 'active':''}" onclick="switchView('month')">Month</button>
+        <button class="tab-btn ${activeView==='6month'  ? 'active':''}" onclick="switchView('6month')">6 Months</button>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="chart"></canvas>
+      </div>
+
+      ${recent.length ? `
+        <div class="recent-log">
+          <div class="sec-label" style="margin-top:24px; margin-bottom:0">Recent</div>
+          ${recent.map(l => `
+            <div class="log-entry">
+              <span class="log-date">${fmtDate(l.date)}</span>
+              <span class="pill ${l.type}">${l.type}</span>
+              <span class="log-score ${l.score >= 0 ? 'pos' : 'neg'}">${l.score > 0 ? '+' : ''}${l.score}</span>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
+    </div>
+  `;
+
+  setTimeout(() => drawChart(habit.id), 0);
+}
+
+// ── Draw chart ─────────────────────────────────────
+function drawChart(habitId) {
+  const canvas = document.getElementById('chart');
+  if (!canvas) return;
+  if (activeChart) { activeChart.destroy(); activeChart = null; }
+
+  const { labels, data } = chartData(habitId, activeView);
+
+  activeChart = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        borderColor: '#1D3557',
+        borderWidth: 2,
+        pointRadius: activeView === 'week' ? 4 : 2,
+        pointBackgroundColor: '#1D3557',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 1.5,
+        fill: true,
+        backgroundColor: ctx => {
+          const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 180);
+          g.addColorStop(0, 'rgba(29,53,87,0.14)');
+          g.addColorStop(1, 'rgba(29,53,87,0.00)');
+          return g;
+        },
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1D3557',
+          titleFont: { family: 'DM Sans', size: 11 },
+          bodyFont:  { family: 'DM Sans', size: 12, weight: '600' },
+          callbacks: {
+            label: c => ` ${c.parsed.y >= 0 ? '+' : ''}${c.parsed.y} pts`
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { font: { family: 'DM Sans', size: 10 }, color: '#8A8478' },
+          border: { display: false }
+        },
+        y: {
+          grid: { color: '#E5E1D9', lineWidth: 1 },
+          ticks: { font: { family: 'DM Sans', size: 10 }, color: '#8A8478' },
+          border: { display: false }
+        }
+      }
+    }
+  });
+}
+
+function switchView(v) { activeView = v; renderDetail(); }
+
+// ── Log entry ──────────────────────────────────────
+function log(type) {
+  const habit = habits.find(h => h.id === activeId);
+  if (!habit) return;
+
+  const date = document.getElementById('logDate').value;
+  if (!date) return;
+
+  const score = type === 'done' ? habit.done : type === 'partial' ? habit.partial : habit.skip;
+
+  const existing = logs.find(l => l.habitId === habit.id && l.date === date);
+  if (existing) {
+    existing.type  = type;
+    existing.score = score;
+  } else {
+    logs.push({ id: String(Date.now()), habitId: habit.id, date, type, score });
+  }
+
+  persist();
+  toast(`Logged "${type}" — ${fmtDate(date)}`);
+  renderDetail();
+}
+
+// ── Delete habit ───────────────────────────────────
+function delHabit(id) {
+  if (!confirm('Delete this habit and all its logs?')) return;
+  habits = habits.filter(h => h.id !== id);
+  logs   = logs.filter(l => l.habitId !== id);
+  activeId = null;
+  persist();
+  renderList();
+  document.getElementById('main').innerHTML = `
+    <div class="empty-state">
+      <h2>No habit selected</h2>
+      <p>Add a habit or pick one from the list.</p>
+    </div>`;
+}
+
+// ── Modal ──────────────────────────────────────────
+function openModal() {
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(() => document.getElementById('mName').focus(), 100);
+}
+
+function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+
+function overlayClick(e) { if (e.target === document.getElementById('overlay')) closeModal(); }
+
+function addHabit() {
+  const name    = document.getElementById('mName').value.trim();
+  const done    = parseInt(document.getElementById('mDone').value)    || 10;
+  const partial = parseInt(document.getElementById('mPartial').value) || 4;
+  const skip    = parseInt(document.getElementById('mSkip').value)    || -5;
+
+  if (!name) { document.getElementById('mName').focus(); return; }
+
+  habits.push({
+    id: String(Date.now()),
+    name,
+    done:    Math.abs(done),
+    partial: Math.max(0, partial),
+    skip:    -Math.abs(skip),
+    createdAt: new Date().toISOString()
+  });
+
+  persist();
+  closeModal();
+
+  // Reset
+  document.getElementById('mName').value    = '';
+  document.getElementById('mDone').value    = 10;
+  document.getElementById('mPartial').value = 4;
+  document.getElementById('mSkip').value    = -5;
+
+  renderList();
+  toast(`"${name}" added`);
+}
+
+// ── Keyboard ───────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Enter' && document.getElementById('overlay').classList.contains('open')) addHabit();
+});
+
+// ── Helpers ────────────────────────────────────────
+function todayStr() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function offsetDate(days) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split('T')[0];
+}
+
+function fmtDate(s) {
+  const d = new Date(s + 'T12:00:00');
+  return d.toLocaleDateString('en', { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Init ───────────────────────────────────────────
+renderList();
+</script>
+</body>
+</html>
