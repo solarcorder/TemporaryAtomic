@@ -22,6 +22,8 @@
       --partial-bg: #FDEBD0;
       --skip: #9B2226;
       --skip-bg: #FFDAD6;
+      --auto: #6B46C1;
+      --auto-bg: #EDE9FE;
     }
 
     body {
@@ -43,7 +45,6 @@
       align-items: center;
       gap: 12px;
     }
-
     header h1 {
       font-family: 'Playfair Display', serif;
       font-size: 1.35rem;
@@ -53,434 +54,282 @@
     }
 
     /* ── Layout ── */
-    .layout {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
+    .layout { display: flex; flex: 1; overflow: hidden; }
 
     /* ── Sidebar ── */
     .sidebar {
-      width: 230px;
-      min-width: 230px;
+      width: 236px; min-width: 236px;
       background: var(--surface);
       border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
+      display: flex; flex-direction: column;
       overflow: hidden;
     }
-
     .sidebar-top {
       padding: 20px 16px 12px;
-      display: flex;
-      align-items: center;
+      display: flex; align-items: center;
       justify-content: space-between;
     }
-
     .sidebar-top .label {
-      font-size: 0.62rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
+      font-size: 0.62rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
       color: var(--muted);
     }
-
     .btn-add-habit {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 5px 11px;
-      font-size: 0.72rem;
+      background: var(--accent); color: #fff;
+      border: none; border-radius: 6px;
+      padding: 5px 11px; font-size: 0.72rem;
       font-family: 'DM Sans', sans-serif;
-      font-weight: 500;
-      cursor: pointer;
-      letter-spacing: 0.02em;
+      font-weight: 500; cursor: pointer;
     }
-
-    .habit-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0 8px 16px;
-    }
-
+    .habit-list { flex: 1; overflow-y: auto; padding: 0 8px 16px; }
     .habit-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 10px;
-      border-radius: 7px;
-      cursor: pointer;
-      font-size: 0.83rem;
-      color: var(--text);
+      display: flex; align-items: center;
+      gap: 8px; padding: 9px 10px;
+      border-radius: 7px; cursor: pointer;
+      font-size: 0.83rem; color: var(--text);
       transition: background 0.12s;
       user-select: none;
     }
-
     .habit-item:hover { background: #EDEBE4; }
-
-    .habit-item.active {
-      background: var(--accent);
-      color: #fff;
-    }
-
+    .habit-item.active { background: var(--accent); color: #fff; }
     .h-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--muted);
-      flex-shrink: 0;
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--muted); flex-shrink: 0;
     }
-
-    .habit-item.active .h-dot { background: rgba(255,255,255,0.6); }
+    .habit-item.active .h-dot { background: rgba(255,255,255,0.5); }
+    .h-auto-badge {
+      margin-left: auto; font-size: 0.65rem;
+      opacity: 0.7; flex-shrink: 0;
+    }
 
     /* ── Main ── */
-    .main {
-      flex: 1;
-      overflow-y: auto;
-      padding: 32px 36px;
-    }
-
+    .main { flex: 1; overflow-y: auto; padding: 32px 36px; }
     .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      gap: 10px;
-      color: var(--muted);
-      text-align: center;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      height: 100%; gap: 10px;
+      color: var(--muted); text-align: center;
     }
-
     .empty-state h2 {
       font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      font-weight: 400;
-      font-style: italic;
+      font-size: 1.5rem; font-weight: 400; font-style: italic;
     }
-
     .empty-state p { font-size: 0.83rem; }
 
     /* ── Detail ── */
-    .detail { max-width: 620px; }
-
+    .detail { max-width: 640px; }
     .detail-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 3px;
+      display: flex; align-items: flex-start;
+      justify-content: space-between; margin-bottom: 3px;
     }
-
     .habit-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.9rem;
-      font-weight: 600;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
+      font-size: 1.9rem; font-weight: 600;
+      letter-spacing: -0.03em; line-height: 1.1;
     }
-
+    .header-btns { display: flex; gap: 8px; margin-top: 4px; flex-shrink: 0; }
     .btn-del {
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--muted);
-      font-size: 0.7rem;
-      font-family: 'DM Sans', sans-serif;
-      padding: 4px 9px;
-      cursor: pointer;
-      margin-top: 4px;
-      transition: all 0.12s;
+      background: none; border: 1px solid var(--border);
+      border-radius: 6px; color: var(--muted);
+      font-size: 0.7rem; font-family: 'DM Sans', sans-serif;
+      padding: 4px 9px; cursor: pointer; transition: all 0.12s;
     }
-
     .btn-del:hover { color: var(--skip); border-color: var(--skip); }
 
+    /* ── Automate button ── */
+    .btn-automate {
+      display: flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 6px;
+      font-size: 0.7rem; font-family: 'DM Sans', sans-serif;
+      font-weight: 600; cursor: pointer; transition: all 0.15s;
+      border: 1.5px solid var(--border);
+      background: none; color: var(--muted);
+      letter-spacing: 0.03em;
+    }
+    .btn-automate.on {
+      background: var(--auto-bg);
+      border-color: var(--auto);
+      color: var(--auto);
+    }
+    .btn-automate .auto-icon { font-size: 0.75rem; }
+
+    /* ── Points legend ── */
     .pts-legend {
-      display: flex;
-      gap: 14px;
-      margin-bottom: 26px;
-      font-size: 0.73rem;
-      color: var(--muted);
+      display: flex; gap: 14px;
+      margin-bottom: 26px; font-size: 0.73rem;
+      color: var(--muted); flex-wrap: wrap;
     }
-
     .pts-legend span { display: flex; align-items: center; gap: 4px; }
-
     .pill {
-      display: inline-block;
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-weight: 600;
-      font-size: 0.68rem;
+      display: inline-block; padding: 1px 6px;
+      border-radius: 4px; font-weight: 600; font-size: 0.68rem;
     }
-
-    .pill.done { background: var(--done-bg); color: var(--done); }
+    .pill.done    { background: var(--done-bg);    color: var(--done);    }
     .pill.partial { background: var(--partial-bg); color: var(--partial); }
-    .pill.skip { background: var(--skip-bg); color: var(--skip); }
+    .pill.skip    { background: var(--skip-bg);    color: var(--skip);    }
+    .pill.auto    { background: var(--auto-bg);    color: var(--auto);    }
 
     /* ── Section label ── */
     .sec-label {
-      font-size: 0.62rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 10px;
+      font-size: 0.62rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 10px;
     }
 
     /* ── Log row ── */
     .log-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 26px;
-      flex-wrap: wrap;
+      display: flex; align-items: center;
+      gap: 10px; margin-bottom: 26px; flex-wrap: wrap;
     }
-
     input[type="date"] {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.8rem;
-      padding: 7px 11px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      background: var(--surface);
-      color: var(--text);
-      cursor: pointer;
-      outline: none;
+      font-family: 'DM Sans', sans-serif; font-size: 0.8rem;
+      padding: 7px 11px; border: 1.5px solid var(--border);
+      border-radius: 8px; background: var(--surface);
+      color: var(--text); cursor: pointer; outline: none;
     }
-
     input[type="date"]:focus { border-color: var(--accent); }
-
     .log-btn {
-      padding: 7px 16px;
-      border-radius: 8px;
-      border: 1.5px solid;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      cursor: pointer;
-      background: transparent;
-      transition: all 0.13s;
+      padding: 7px 16px; border-radius: 8px; border: 1.5px solid;
+      font-family: 'DM Sans', sans-serif; font-size: 0.72rem;
+      font-weight: 600; letter-spacing: 0.07em;
+      text-transform: uppercase; cursor: pointer;
+      background: transparent; transition: all 0.13s;
     }
-
-    .log-btn.done   { border-color: var(--done);    color: var(--done);    }
-    .log-btn.done:hover   { background: var(--done);    color: #fff; }
+    .log-btn.done    { border-color: var(--done);    color: var(--done);    }
+    .log-btn.done:hover    { background: var(--done);    color: #fff; }
     .log-btn.partial { border-color: var(--partial); color: var(--partial); }
     .log-btn.partial:hover { background: var(--partial); color: #fff; }
-    .log-btn.skip   { border-color: var(--skip);    color: var(--skip);    }
-    .log-btn.skip:hover   { background: var(--skip);    color: #fff; }
+    .log-btn.skip    { border-color: var(--skip);    color: var(--skip);    }
+    .log-btn.skip:hover    { background: var(--skip);    color: #fff; }
+
+    /* ── Automate notice ── */
+    .auto-notice {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--auto-bg); border: 1px solid #C4B5FD;
+      border-radius: 8px; padding: 9px 13px;
+      margin-bottom: 16px; font-size: 0.78rem;
+      color: var(--auto);
+    }
+    .auto-notice strong { font-weight: 600; }
 
     /* ── Stats grid ── */
     .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-bottom: 28px;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 14px; margin-bottom: 28px;
     }
-
     .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      padding: 15px 18px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 11px; padding: 15px 18px;
     }
-
     .stat-lbl {
-      font-size: 0.62rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 5px;
+      font-size: 0.62rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 5px;
     }
-
     .stat-val {
       font-family: 'Playfair Display', serif;
-      font-size: 1.75rem;
-      font-weight: 600;
-      line-height: 1;
+      font-size: 1.75rem; font-weight: 600; line-height: 1;
     }
-
     .stat-val.pos { color: var(--done); }
     .stat-val.neg { color: var(--skip); }
 
     /* ── Chart ── */
     .chart-tabs {
-      display: flex;
-      gap: 2px;
+      display: flex; gap: 2px;
       border-bottom: 1px solid var(--border);
       margin-bottom: 14px;
     }
-
     .tab-btn {
-      padding: 6px 14px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 500;
-      background: none;
-      border: none;
-      color: var(--muted);
-      cursor: pointer;
+      padding: 6px 14px; font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem; font-weight: 500;
+      background: none; border: none;
+      color: var(--muted); cursor: pointer;
       border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
-      transition: all 0.12s;
+      margin-bottom: -1px; transition: all 0.12s;
     }
-
     .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-
     .chart-wrap {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      padding: 18px 18px 12px;
-      height: 220px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 11px; padding: 18px 18px 12px; height: 220px;
     }
 
     /* ── Recent log ── */
     .recent-log { margin-top: 26px; }
-
     .log-entry {
-      display: flex;
-      align-items: center;
+      display: flex; align-items: center;
       justify-content: space-between;
-      padding: 9px 0;
-      border-bottom: 1px solid var(--border);
+      padding: 9px 0; border-bottom: 1px solid var(--border);
       font-size: 0.8rem;
     }
-
     .log-entry:last-child { border-bottom: none; }
     .log-date { color: var(--muted); font-size: 0.75rem; }
-
-    .log-score {
-      font-weight: 600;
-      font-size: 0.82rem;
-    }
-
+    .log-score { font-weight: 600; font-size: 0.82rem; }
     .log-score.pos { color: var(--done); }
     .log-score.neg { color: var(--skip); }
 
     /* ── Modal ── */
     .overlay {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background: rgba(28,27,24,0.45);
       backdrop-filter: blur(5px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      opacity: 0;
-      pointer-events: none;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100; opacity: 0; pointer-events: none;
       transition: opacity 0.18s;
     }
-
     .overlay.open { opacity: 1; pointer-events: all; }
-
     .modal {
-      background: var(--surface);
-      border-radius: 16px;
-      padding: 30px;
-      width: 370px;
+      background: var(--surface); border-radius: 16px;
+      padding: 30px; width: 370px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.14);
-      transform: translateY(10px);
-      transition: transform 0.2s;
+      transform: translateY(10px); transition: transform 0.2s;
     }
-
     .overlay.open .modal { transform: translateY(0); }
-
     .modal h2 {
       font-family: 'Playfair Display', serif;
-      font-size: 1.3rem;
-      margin-bottom: 22px;
+      font-size: 1.3rem; margin-bottom: 22px;
     }
-
     .form-group { margin-bottom: 15px; }
-
     .form-label {
-      display: block;
-      font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 6px;
+      display: block; font-size: 0.65rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 6px;
     }
-
     .form-input {
-      width: 100%;
-      padding: 9px 13px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.88rem;
-      background: var(--bg);
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.14s;
+      width: 100%; padding: 9px 13px;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.88rem;
+      background: var(--bg); color: var(--text);
+      outline: none; transition: border-color 0.14s;
     }
-
     .form-input:focus { border-color: var(--accent); }
-
-    .pts-inputs {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-    }
-
+    .pts-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
     .pts-inputs .form-group { margin-bottom: 0; }
-
-    .done-lbl { color: var(--done) !important; }
+    .done-lbl    { color: var(--done)    !important; }
     .partial-lbl { color: var(--partial) !important; }
-    .skip-lbl { color: var(--skip) !important; }
-
-    .modal-footer {
-      display: flex;
-      gap: 10px;
-      margin-top: 22px;
-    }
-
+    .skip-lbl    { color: var(--skip)    !important; }
+    .modal-footer { display: flex; gap: 10px; margin-top: 22px; }
     .btn-primary {
-      flex: 1;
-      padding: 10px;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.83rem;
-      font-weight: 600;
-      cursor: pointer;
+      flex: 1; padding: 10px; background: var(--accent);
+      color: #fff; border: none; border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.83rem;
+      font-weight: 600; cursor: pointer;
     }
-
     .btn-cancel {
-      padding: 10px 16px;
-      background: none;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      color: var(--muted);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.83rem;
-      cursor: pointer;
+      padding: 10px 16px; background: none;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      color: var(--muted); font-family: 'DM Sans', sans-serif;
+      font-size: 0.83rem; cursor: pointer;
     }
 
     /* ── Toast ── */
     .toast {
-      position: fixed;
-      bottom: 22px;
-      right: 22px;
-      background: var(--accent);
-      color: #fff;
-      padding: 9px 16px;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      z-index: 200;
-      transform: translateY(50px);
-      opacity: 0;
-      transition: all 0.22s;
-      pointer-events: none;
+      position: fixed; bottom: 22px; right: 22px;
+      background: var(--accent); color: #fff;
+      padding: 9px 16px; border-radius: 8px;
+      font-size: 0.8rem; font-weight: 500; z-index: 200;
+      transform: translateY(50px); opacity: 0;
+      transition: all 0.22s; pointer-events: none;
     }
-
     .toast.show { transform: translateY(0); opacity: 1; }
 
     /* ── Scrollbar ── */
@@ -509,23 +358,21 @@
   <!-- Main panel -->
   <main class="main" id="main">
     <div class="empty-state">
-      <h2>No habit selected</h2>
-      <p>Add a habit or pick one from the list.</p>
+      <h2>Select a habit</h2>
+      <p>Pick one from the list or add a new one.</p>
     </div>
   </main>
 
 </div>
 
-<!-- Add Habit Modal -->
+<!-- Modal -->
 <div class="overlay" id="overlay" onclick="overlayClick(event)">
   <div class="modal">
     <h2>New Habit</h2>
-
     <div class="form-group">
       <label class="form-label">Name</label>
-      <input type="text" class="form-input" id="mName" placeholder="e.g. Exercise 30 min" autocomplete="off">
+      <input type="text" class="form-input" id="mName" placeholder="e.g. Meditate 10 min" autocomplete="off">
     </div>
-
     <div class="form-group">
       <label class="form-label">Points per outcome</label>
       <div class="pts-inputs">
@@ -543,7 +390,6 @@
         </div>
       </div>
     </div>
-
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
       <button class="btn-primary" onclick="addHabit()">Add Habit</button>
@@ -554,13 +400,61 @@
 <div class="toast" id="toast"></div>
 
 <script>
+// ── Default habits ─────────────────────────────────
+// done / partial / skip points — calibrated for each habit's weight in your journey.
+// Addiction-recovery habits carry the highest skip penalty.
+const DEFAULT_HABITS = [
+  // ── Recovery / Discipline (highest stakes)
+  { name: 'No adult content',           done: 10, partial: 0,  skip: -10, automate: false },
+  { name: 'YouTube Shorts ≤ 1 hr',      done: 10, partial: 4,  skip: -8,  automate: false },
+
+  // ── Core Skill Building
+  { name: 'Practicing JavaScript',      done: 10, partial: 5,  skip: -6,  automate: false },
+  { name: 'Studying',                   done: 10, partial: 5,  skip: -7,  automate: false },
+  { name: 'Practicing English',         done: 8,  partial: 4,  skip: -5,  automate: false },
+  { name: 'Reading book',               done: 8,  partial: 4,  skip: -5,  automate: false },
+  { name: 'Practicing Guitar',          done: 8,  partial: 4,  skip: -4,  automate: false },
+  { name: 'Practicing Cooking',         done: 7,  partial: 3,  skip: -3,  automate: false },
+
+  // ── Physical Health
+  { name: 'Exercise',                   done: 10, partial: 5,  skip: -6,  automate: false },
+  { name: 'Drinking 3L water',          done: 8,  partial: 4,  skip: -5,  automate: false },
+  { name: 'Drinking protein shake',     done: 8,  partial: 3,  skip: -4,  automate: false },
+  { name: 'Meeting optimal protein',    done: 9,  partial: 4,  skip: -5,  automate: false },
+  { name: 'Waking early',               done: 8,  partial: 4,  skip: -6,  automate: false },
+  { name: 'Low daytime sleep',          done: 7,  partial: 3,  skip: -5,  automate: false },
+
+  // ── Daily Hygiene (basic but non-negotiable)
+  { name: 'Brush 2× a day',             done: 6,  partial: 3,  skip: -5,  automate: false },
+  { name: 'Bathing',                    done: 6,  partial: 3,  skip: -4,  automate: false },
+
+  // ── Mental / Spiritual
+  { name: 'Meditation',                 done: 9,  partial: 4,  skip: -5,  automate: false },
+  { name: 'Going mandir',               done: 8,  partial: 3,  skip: -2,  automate: false },
+];
+
 // ── State ──────────────────────────────────────────
-let habits = JSON.parse(localStorage.getItem('h_habits') || '[]');
+let habits = JSON.parse(localStorage.getItem('h_habits') || 'null');
 let logs   = JSON.parse(localStorage.getItem('h_logs')   || '[]');
-let activeId = null;
+let activeId   = null;
 let activeView = 'week';
 let activeChart = null;
 
+// First-time load: seed default habits
+if (!habits) {
+  habits = DEFAULT_HABITS.map((h, i) => ({
+    id: String(1000 + i),
+    name: h.name,
+    done: h.done,
+    partial: h.partial,
+    skip: h.skip,
+    automate: h.automate,
+    createdAt: new Date().toISOString()
+  }));
+  persist();
+}
+
+// ── Persist ────────────────────────────────────────
 function persist() {
   localStorage.setItem('h_habits', JSON.stringify(habits));
   localStorage.setItem('h_logs',   JSON.stringify(logs));
@@ -572,7 +466,7 @@ function toast(msg) {
   el.textContent = msg;
   el.classList.add('show');
   clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.remove('show'), 2200);
+  el._t = setTimeout(() => el.classList.remove('show'), 2400);
 }
 
 // ── Sidebar ────────────────────────────────────────
@@ -581,7 +475,8 @@ function renderList() {
     ? habits.map(h => `
         <div class="habit-item ${h.id === activeId ? 'active' : ''}" onclick="select('${h.id}')">
           <div class="h-dot"></div>
-          ${esc(h.name)}
+          <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${esc(h.name)}</span>
+          ${h.automate ? '<span class="h-auto-badge">⚡</span>' : ''}
         </div>
       `).join('')
     : `<div style="padding:12px 10px; font-size:0.78rem; color:var(--muted)">No habits yet.</div>`;
@@ -595,20 +490,17 @@ function select(id) {
   renderDetail();
 }
 
-// ── Compute stats ──────────────────────────────────
+// ── Stats ──────────────────────────────────────────
 function stats(habitId) {
   const ls = logs.filter(l => l.habitId === habitId).sort((a,b) => a.date > b.date ? 1 : -1);
   const total = ls.reduce((s, l) => s + l.score, 0);
 
-  // Streak = consecutive days with a log (any type) ending today or yesterday
+  // Streak: consecutive days with any log, ending today or yesterday
   let streak = 0;
-  const today = todayStr();
   for (let i = 0; i < 365; i++) {
     const d = offsetDate(-i);
-    const found = ls.find(l => l.date === d);
-    if (found) { streak++; }
-    else if (i === 0) { /* today not logged yet — ok */ }
-    else break;
+    if (ls.find(l => l.date === d)) { streak++; }
+    else if (i > 0) break;
   }
 
   return { total, streak, count: ls.length, logs: ls };
@@ -620,11 +512,11 @@ function chartData(habitId, view) {
   const step = view === 'week' ? 1 : view === 'month' ? 3 : 10;
 
   const logMap = {};
-  logs.filter(l => l.habitId === habitId).forEach(l => { logMap[l.date] = (logMap[l.date] || 0) + l.score; });
+  logs.filter(l => l.habitId === habitId).forEach(l => {
+    logMap[l.date] = (logMap[l.date] || 0) + l.score;
+  });
 
   const start = offsetDate(-(days - 1));
-
-  // Base score before window
   let running = 0;
   Object.keys(logMap).filter(d => d < start).forEach(d => { running += logMap[d]; });
 
@@ -636,7 +528,6 @@ function chartData(habitId, view) {
     allScores.push(running);
   }
 
-  // Sample for readability
   const labels = [], data = [];
   allDates.forEach((d, i) => {
     if (i % step === 0 || i === allDates.length - 1) {
@@ -664,21 +555,35 @@ function renderDetail() {
 
       <div class="detail-header">
         <div class="habit-title">${esc(habit.name)}</div>
-        <button class="btn-del" onclick="delHabit('${habit.id}')">Delete</button>
+        <div class="header-btns">
+          <button class="btn-automate ${habit.automate ? 'on' : ''}"
+                  onclick="toggleAutomate('${habit.id}')"
+                  title="${habit.automate ? 'Automate is ON — disabling it' : 'Enable automate: logs Done every day automatically'}">
+            <span class="auto-icon">⚡</span>
+            Automate ${habit.automate ? 'ON' : 'OFF'}
+          </button>
+          <button class="btn-del" onclick="delHabit('${habit.id}')">Delete</button>
+        </div>
       </div>
 
       <div class="pts-legend">
         <span><span class="pill done">+${habit.done}</span> done</span>
         <span><span class="pill partial">+${habit.partial}</span> partial</span>
         <span><span class="pill skip">${habit.skip}</span> skip</span>
+        ${habit.automate ? `<span><span class="pill auto">⚡ auto</span> logs Done daily</span>` : ''}
       </div>
+
+      ${habit.automate ? `
+        <div class="auto-notice">
+          ⚡ <strong>Automated</strong> — this habit is logged as Done every day when you open the page. Override any day below.
+        </div>` : ''}
 
       <div class="sec-label">Log</div>
       <div class="log-row">
         <input type="date" id="logDate" value="${todayStr()}" max="${todayStr()}">
-        <button class="log-btn done"    onclick="log('done')">Done</button>
-        <button class="log-btn partial" onclick="log('partial')">Partial</button>
-        <button class="log-btn skip"    onclick="log('skip')">Skip</button>
+        <button class="log-btn done"    onclick="logEntry('done')">Done</button>
+        <button class="log-btn partial" onclick="logEntry('partial')">Partial</button>
+        <button class="log-btn skip"    onclick="logEntry('skip')">Skip</button>
       </div>
 
       <div class="stats-grid">
@@ -697,13 +602,11 @@ function renderDetail() {
       </div>
 
       <div class="chart-tabs">
-        <button class="tab-btn ${activeView==='week'    ? 'active':''}" onclick="switchView('week')">Week</button>
-        <button class="tab-btn ${activeView==='month'   ? 'active':''}" onclick="switchView('month')">Month</button>
-        <button class="tab-btn ${activeView==='6month'  ? 'active':''}" onclick="switchView('6month')">6 Months</button>
+        <button class="tab-btn ${activeView==='week'   ? 'active':''}" onclick="switchView('week')">Week</button>
+        <button class="tab-btn ${activeView==='month'  ? 'active':''}" onclick="switchView('month')">Month</button>
+        <button class="tab-btn ${activeView==='6month' ? 'active':''}" onclick="switchView('6month')">6 Months</button>
       </div>
-      <div class="chart-wrap">
-        <canvas id="chart"></canvas>
-      </div>
+      <div class="chart-wrap"><canvas id="chart"></canvas></div>
 
       ${recent.length ? `
         <div class="recent-log">
@@ -747,7 +650,7 @@ function drawChart(habitId) {
         fill: true,
         backgroundColor: ctx => {
           const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 180);
-          g.addColorStop(0, 'rgba(29,53,87,0.14)');
+          g.addColorStop(0, 'rgba(29,53,87,0.13)');
           g.addColorStop(1, 'rgba(29,53,87,0.00)');
           return g;
         },
@@ -764,9 +667,7 @@ function drawChart(habitId) {
           backgroundColor: '#1D3557',
           titleFont: { family: 'DM Sans', size: 11 },
           bodyFont:  { family: 'DM Sans', size: 12, weight: '600' },
-          callbacks: {
-            label: c => ` ${c.parsed.y >= 0 ? '+' : ''}${c.parsed.y} pts`
-          }
+          callbacks: { label: c => ` ${c.parsed.y >= 0 ? '+' : ''}${c.parsed.y} pts (cumulative)` }
         }
       },
       scales: {
@@ -788,26 +689,62 @@ function drawChart(habitId) {
 function switchView(v) { activeView = v; renderDetail(); }
 
 // ── Log entry ──────────────────────────────────────
-function log(type) {
+function logEntry(type) {
   const habit = habits.find(h => h.id === activeId);
   if (!habit) return;
-
   const date = document.getElementById('logDate').value;
   if (!date) return;
+  writeLog(habit, date, type);
+  toast(`Logged "${type}" — ${fmtDate(date)}`);
+  renderDetail();
+}
 
+function writeLog(habit, date, type, silent = false) {
   const score = type === 'done' ? habit.done : type === 'partial' ? habit.partial : habit.skip;
-
   const existing = logs.find(l => l.habitId === habit.id && l.date === date);
   if (existing) {
     existing.type  = type;
     existing.score = score;
   } else {
-    logs.push({ id: String(Date.now()), habitId: habit.id, date, type, score });
+    logs.push({ id: String(Date.now()) + Math.random(), habitId: habit.id, date, type, score });
+  }
+  persist();
+}
+
+// ── Automate ───────────────────────────────────────
+function toggleAutomate(id) {
+  const habit = habits.find(h => h.id === id);
+  if (!habit) return;
+  habit.automate = !habit.automate;
+  persist();
+
+  if (habit.automate) {
+    // Immediately log today as Done if not already logged
+    const today = todayStr();
+    const already = logs.find(l => l.habitId === habit.id && l.date === today);
+    if (!already) writeLog(habit, today, 'done');
+    toast(`⚡ Automate ON — "${habit.name}" will log Done daily`);
+  } else {
+    toast(`Automate OFF — "${habit.name}"`);
   }
 
-  persist();
-  toast(`Logged "${type}" — ${fmtDate(date)}`);
+  renderList();
   renderDetail();
+}
+
+// Run automate for all enabled habits on page load
+function runAutomate() {
+  const today = todayStr();
+  let count = 0;
+  habits.forEach(habit => {
+    if (!habit.automate) return;
+    const already = logs.find(l => l.habitId === habit.id && l.date === today);
+    if (!already) {
+      writeLog(habit, today, 'done', true);
+      count++;
+    }
+  });
+  if (count > 0) toast(`⚡ Auto-logged ${count} habit${count > 1 ? 's' : ''} as Done for today`);
 }
 
 // ── Delete habit ───────────────────────────────────
@@ -820,8 +757,8 @@ function delHabit(id) {
   renderList();
   document.getElementById('main').innerHTML = `
     <div class="empty-state">
-      <h2>No habit selected</h2>
-      <p>Add a habit or pick one from the list.</p>
+      <h2>Select a habit</h2>
+      <p>Pick one from the list or add a new one.</p>
     </div>`;
 }
 
@@ -830,10 +767,10 @@ function openModal() {
   document.getElementById('overlay').classList.add('open');
   setTimeout(() => document.getElementById('mName').focus(), 100);
 }
-
 function closeModal() { document.getElementById('overlay').classList.remove('open'); }
-
-function overlayClick(e) { if (e.target === document.getElementById('overlay')) closeModal(); }
+function overlayClick(e) {
+  if (e.target === document.getElementById('overlay')) closeModal();
+}
 
 function addHabit() {
   const name    = document.getElementById('mName').value.trim();
@@ -846,16 +783,15 @@ function addHabit() {
   habits.push({
     id: String(Date.now()),
     name,
-    done:    Math.abs(done),
-    partial: Math.max(0, partial),
-    skip:    -Math.abs(skip),
+    done:     Math.abs(done),
+    partial:  Math.max(0, partial),
+    skip:     -Math.abs(skip),
+    automate: false,
     createdAt: new Date().toISOString()
   });
 
   persist();
   closeModal();
-
-  // Reset
   document.getElementById('mName').value    = '';
   document.getElementById('mDone').value    = 10;
   document.getElementById('mPartial').value = 4;
@@ -875,23 +811,21 @@ document.addEventListener('keydown', e => {
 function todayStr() {
   return new Date().toISOString().split('T')[0];
 }
-
 function offsetDate(days) {
   const d = new Date();
   d.setDate(d.getDate() + days);
   return d.toISOString().split('T')[0];
 }
-
 function fmtDate(s) {
   const d = new Date(s + 'T12:00:00');
   return d.toLocaleDateString('en', { weekday: 'short', month: 'short', day: 'numeric' });
 }
-
 function esc(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // ── Init ───────────────────────────────────────────
+runAutomate();
 renderList();
 </script>
 </body>
